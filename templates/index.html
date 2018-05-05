@@ -6,5 +6,49 @@
 </head>
 <body>
     <h1>テストページ</h1>
-</body>
+    <div id="datetime">
+    </div>
+<script>
+let websocket;
+window.addEventListener("load",
+    function (event) {
+        let protocol = "ws";
+        if (location.protocol == "https:") {
+            protocol = "wss";
+        }
+        let hostname = window.location.hostname;
+        let port = window.location.port;
+        websocket = new WebSocket(protocol + "://" + hostname + ":" + port + "/ws");
 
+        websocket.onopen = function() {
+            let div = document.getElementById("datetime");
+            let p = document.createElement("p");
+            p.innerHTML = "WebSocket opened";
+            div.appendChild(p)
+
+            setInterval(sendMessage, 1000);
+        };
+
+        websocket.onmessage = function (ev) {
+            let datetime = ev.data;
+            let div = document.getElementById("datetime");
+            let p = document.createElement("p");
+            p.innerHTML = datetime;
+            div.appendChild(p)
+        };
+
+        websocket.onclose = function() {
+            let div = document.getElementById("datetime");
+            let p = document.createElement("p");
+            p.innerHTML = "WebSocket closed";
+            div.appendChild(p)
+        };
+    }
+, false);
+
+function sendMessage() {
+    websocket.send("");
+}
+</script>
+</body>
+</html>
